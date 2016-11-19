@@ -2,9 +2,16 @@
  * Code By Travis Leeden
  * Code for controlling an LED based desk light
  */
-int ledCount = 12;
+
+//Variables for led pin numbers
 int leds[12] = {13,12,11,10,9,8,7,6,5,4,3,2};
-int button = 7;
+int ledCount = 12;
+int blueLeds[4] = {13,12,11,10};
+int redLeds[4] = {9,8,7,6};
+int whiteLeds[4] = {5,4,3,2};
+
+int button = 1;
+//Button state for remembering if the button is HIGH or LOW
 int buttonState = 0;
 
 //Current selected animation
@@ -36,15 +43,6 @@ void loop()
 {
   buttonState = digitalRead(button);
   SerialReader();
-  //TODO: Remove when button is implemented
-  //if(buttonState == HIGH)
-//  {
-    //AllOn();
-    //Train(500);
-    //OneByOne(500);
-    //Flash(500);
-  //}
-
 }
 
 /**
@@ -67,7 +65,7 @@ void Train(long delaySeconds)
 }
 
 /**
- *  Lights the leds one by one and turns them off before lighting the next one.
+ *  Lights the leds one by one(In Order) and turns them off before lighting the next one.
  * delaySeconds = milliseconds between each action
  */
 void OneByOne(long delaySeconds)
@@ -98,7 +96,9 @@ void Flash(long delaySeconds)
   delay(delaySeconds);
 }
 
-//Turns all the leds on
+/**
+ * Turns all connected leds on
+*/
 void AllOn(void)
 {
   for(int i = 0; i < ledCount; i++)
@@ -107,7 +107,9 @@ void AllOn(void)
   }
 }
 
-//Turns all leds off
+/**
+ * Turns all connected leds off
+*/
 void ClearLeds(void)
 {
   for(int i = 0; i < ledCount; i++)
@@ -116,7 +118,10 @@ void ClearLeds(void)
   }
 }
 
-//Reads and activates commands sent from the serial console.
+/**
+ * Serial Reader for getting commands from serial console.
+ * Only used for debugging
+*/
 void SerialReader(void)
 {
   if (Serial.available())
@@ -138,24 +143,28 @@ void SerialReader(void)
   }
 }
 
-//Sets the mode to a speficic animation
+/**
+ * Sets the mode for lamp
+*/
 void SetMode(int mode)
 {
-  if(mode == 1)
+  switch(mode)
   {
-    Train(500);
-  }
-  else if(mode == 2)
-  {
-    OneByOne(500);
-  }
-  else if(mode == 3)
-  {
-    Flash(500);
-  }
-  else if(mode == 4)
-  {
-    AllOn();
+    case 1:
+      Train(500);
+      break;
+    case 2:
+      OneByOne(500);
+      break;
+    case 3:
+      Flash(500);
+      break;
+    case 4:
+      AllOn();
+      break;
+    default:
+      ClearLeds();
+      break;
   }
 }
 
